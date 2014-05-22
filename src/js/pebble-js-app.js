@@ -1,3 +1,4 @@
+//processes api requests
 function HTTPGET(url) {
 	var req = new XMLHttpRequest();
 	req.open("GET", url, false);
@@ -5,37 +6,29 @@ function HTTPGET(url) {
 	return req.responseText;
 }
 
-var getWeather = function() {
-	//Get weather info
-	var response = HTTPGET("http://api.openweathermap.org/data/2.5/weather?q=London,uk");
-		
-	//Convert to JSON
-	var json = JSON.parse(response);
-	
-	//Extract the data
-	var temperature = Math.round(json.main.temp - 273.15);
-	var location = json.name;
-	
-	//Console output to check all is working.
-	console.log("It is " + temperature + " degrees in " + location + " today!");
-	
-	//Construct a key-value dictionary	
-	var dict = {"KEY_LOCATION" : location, "KEY_TEMPERATURE": temperature};
-	
-	//Send data to watch for display
+//gets quote from and sends it to watch
+var getQuote = function() {
+	var response = HTTPGET("http://www.iheartquotes.com/api/v1/random?max_characters=250");
+	var quote = response;
+	//outputs to console for testing
+	console.log(""+quote);
+	//connects to specific key for communication
+	var dict = {"KEY_QUOTE" : quote};
+	//sends data to watch for display
 	Pebble.sendAppMessage(dict);
 };
 
+//allows javascript app to listen for initial request
 Pebble.addEventListener("ready",
   function(e) {
-	//App is ready to receive JS messages
-	getWeather();
+	getQuote();
   }
 );
 
+//allows javascript app to listen for following requests
 Pebble.addEventListener("appmessage",
   function(e) {
 	//Watch wants new data!
-	getWeather();
+	getQuote();
   }
 );
